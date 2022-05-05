@@ -1,0 +1,43 @@
+#! /usr/bin/env ruby
+
+arg_path = ARGV[0]
+abort 'require file path' unless arg_path
+
+require 'vips'
+require 'pathname'
+
+class OutputPath
+  attr_reader :parent, :basename, :extname
+
+  def initialize(path)
+    pn = Pathname.new(path)
+
+    @parent = pn.parent
+    @extname = pn.extname
+    @basename = pn.basename(extname)
+  end
+
+  def filename
+    filename = "f.#{basename}#{extname}"
+  end
+
+  def to_s
+    (parent + filename).to_s
+  end
+end
+
+in_path = File.expand_path(arg_path)
+out_path = OutputPath.new(in_path)
+
+im = Vips::Image.new_from_file(in_path)
+om = im.resize(0.5)
+
+frame_size =
+  if om.width > om.height
+    om.width * 0.11
+  else
+    om.height * 0.11
+  end
+
+om = om.embed(frame_size, frame_size, om.width + (frame_size * 2), om.height + (frame_size * 2), extend: :white)
+om.write_to_file(out_path.to_s)
