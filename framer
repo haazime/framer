@@ -7,8 +7,6 @@ require 'vips'
 require 'pathname'
 
 class OutputPath
-  attr_reader :parent, :basename, :extname
-
   def initialize(path)
     pn = Pathname.new(path)
 
@@ -18,11 +16,11 @@ class OutputPath
   end
 
   def filename
-    filename = "f.#{basename}#{extname}"
+    "f.#{@basename}#{@extname}"
   end
 
   def to_s
-    (parent + filename).to_s
+    (@parent + filename).to_s
   end
 end
 
@@ -32,12 +30,7 @@ out_path = OutputPath.new(in_path)
 im = Vips::Image.new_from_file(in_path)
 om = im.resize(0.5)
 
-frame_size =
-  if om.width > om.height
-    om.width * 0.11
-  else
-    om.height * 0.11
-  end
-
+frame_size = [om.width, om.height].sort.last * 0.11
 om = om.embed(frame_size, frame_size, om.width + (frame_size * 2), om.height + (frame_size * 2), extend: :white)
+
 om.write_to_file(out_path.to_s)
