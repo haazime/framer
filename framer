@@ -12,7 +12,7 @@ class OutputPath
 
     @parent = pn.parent
     @extname = pn.extname
-    @basename = pn.basename(extname)
+    @basename = pn.basename(@extname)
   end
 
   def filename
