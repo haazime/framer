@@ -24,13 +24,15 @@ class OutputPath
   end
 end
 
+def add_frame(image, frame_size, bg: [255, 255, 255])
+  image.embed(frame_size, frame_size, image.width + (frame_size * 2), image.height + (frame_size * 2), background: bg)
+end
+
 in_path = File.expand_path(arg_path)
 out_path = OutputPath.new(in_path)
 
-im = Vips::Image.new_from_file(in_path)
-om = im.resize(0.5)
-
-frame_size = [om.width, om.height].sort.last * 0.11
-om = om.embed(frame_size, frame_size, om.width + (frame_size * 2), om.height + (frame_size * 2), extend: :white)
-
-om.write_to_file(out_path.to_s)
+Vips::Image.new_from_file(in_path)
+  .then { _1.resize(0.5) }
+  .then { add_frame(_1, [_1.width, _1.height].sort.last * 0.11) }
+  .then { add_frame(_1, 1, bg: [220, 220, 220]) }
+  .then { _1.write_to_file(out_path.to_s) }
