@@ -34,5 +34,5 @@ out_path = OutputPath.new(in_path)
 Vips::Image.new_from_file(in_path)
   .then { _1.resize(0.5) }
   .then { add_frame(_1, [_1.width, _1.height].sort.last * 0.11) }
-  .then { add_frame(_1, 1, bg: [220, 220, 220]) }
+  .then { add_frame(_1, 1, bg: [210, 210, 210]) }
   .then { _1.write_to_file(out_path.to_s) }
